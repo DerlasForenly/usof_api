@@ -20,7 +20,14 @@ class CommentController extends Controller
             ], 401);
         }
 
-        return Comment::find($id);
+        $comment = Comment::find($id);
+        if (!$comment) {
+            return response([
+                'message' => "Not found"
+            ], 404);
+        }
+
+        return $comment;
     }
 
     public function get_likes($id)
@@ -34,7 +41,14 @@ class CommentController extends Controller
             ], 401);
         }
 
-        return Like::where('post_id', $id)->get();
+        $like = Like::where('comment_id', $id)->get();
+        if (!$like) {
+            return response([
+                'message' => 'Not found'
+            ], 404);
+        }
+
+        return $like;
     }
 
     public function create_like(Request $request, $id)
@@ -143,10 +157,16 @@ class CommentController extends Controller
             ], 401);
         }
 
-        $like = Like::where('post_id', $id)->delete();
+        $like = Like::where('comment_id', $id)->where('user_id', $user->id)->get()->first();
+        if (!$like) {
+            return response([
+                'message' => "Not found"
+            ], 404);
+        }
+        $like->delete();
 
         return response([
-            'message' => "like deleted"
-        ]);
+            'message' => "OK"
+        ], 200);
     }
 }

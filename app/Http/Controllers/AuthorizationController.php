@@ -10,8 +10,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthorizationController extends Controller
 {
-
-
     public function login(Request $request)
     {
         $credentials = [
@@ -66,9 +64,60 @@ class AuthorizationController extends Controller
         ]);
     }
 
-    public function password_reset(Request $request) {
-        return response()->json([
-            'email' => $request['email']
+    public function password_reset(Request $request)
+    {
+        $user = User::where('email', $request['email'])->get()->first();
+        if (!$user) {
+            return response([
+                'message' => "Not found"
+            ], 404);
+        }
+
+        $request->validate([
+            'email' => 'required'
         ]);
+
+        $user->update([
+            'remember_token' => Str::random(15)
+        ]);
+
+        mail(
+            $user['email'],
+            'Password reset',
+            'Use this token to reset password: ' . $user['remember_token']
+        );
+
+        return response([
+            'message' => 'OK'
+        ], 200);
+    }
+
+    public function token(Request $request, $token)
+    {
+        $user = User::where('remember_token', $token)->get()->first();
+        if (!$user) {
+            return response([
+                'message' => 'Not found'
+            ], 404);
+        }
+
+        if ($user['remember_token'] != $token) {
+            return response([
+                'message' => 'Permission denied'
+            ], 403);
+        }
+
+        $request->validate([
+            'password' => 'required'
+        ]);
+
+        $user->update([
+            'remebmer_token' => null,
+            'password' => Hash::make($request['password'])
+        ]);
+
+        return response([
+            'message' => 'OK'
+        ], 200);
     }
 }

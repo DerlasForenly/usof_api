@@ -8,11 +8,27 @@ use App\Models\Like;
 use App\Models\Category;
 use App\Models\CategoryPost;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class PostController extends Controller
 {
     public function index()
     {
+        try {
+            $user = auth()->userOrFail();
+        }
+        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 401);
+        }
+
+        if (!Post::all()) {
+            return response([
+                'message' => "Not found"
+            ], 404);
+        }
+
         return Post::all();
     }
 
@@ -61,6 +77,21 @@ class PostController extends Controller
 
     public function show($id)
     {
+        try {
+            $user = auth()->userOrFail();
+        }
+        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 401);
+        }
+
+        if (!Post::find($id)) {
+            return response([
+                'message' => "Not found"
+            ], 404);
+        }
+
         return Post::find($id);
     }
 
@@ -201,7 +232,7 @@ class PostController extends Controller
             ], 401);
         }
 
-        if (!Comment::where('post_id', $post_id)->get()) {
+        if (!Post::find($post_id)) {
             return response([
                 'message' => 'Not found'
             ], 404);
@@ -218,5 +249,52 @@ class PostController extends Controller
         return response([
             'message' => 'OK'
         ], 200);
+    }
+
+    public function get_all_likes($post_id)
+    {
+        try {
+            $user = auth()->userOrFail();
+        }
+        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 401);
+        }
+
+        if (!Post::find($post_id)) {
+            return response([
+                'message' => 'Not found'
+            ], 404);
+        }
+
+        return Like::where('post_id', $post_id)->get();
+    }
+
+    public function get_categories($post_id)
+    {
+        try {
+            $user = auth()->userOrFail();
+        }
+        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 401);
+        }
+
+        if (!Post::find($post_id)) {
+            return response([
+                'message' => 'Not found'
+            ], 404);
+        }
+
+        $category_post = CategoryPost::where('post_id', $post_id)->get();
+
+        $categories = [];
+        foreach ($category_post as $element) {
+            array_push($categories, Category::find($element->id));
+        }
+
+        return $categories;
     }
 }
