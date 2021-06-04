@@ -102,8 +102,8 @@ class UserController extends Controller
         $user->delete();
 
         return response([
-            'message' => "user deleted"
-        ]);
+            'message' => "OK"
+        ], 200);
     }
 
     public function upload_avatar(Request $request)

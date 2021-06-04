@@ -17,12 +17,10 @@ class CreatePostsTable extends Migration
             $table->id();
 
             $table->string('title');
-            $table->string('tags');
-            $table->string('content')->nullable();
+            $table->string('content');
             $table->integer('user_id');
+            $table->json('categories')->nullable();
             $table->integer('likes')->default(0);
-            $table->integer('dislikes')->default(0);
-            $table->string('slug')->unique();
             $table->string('status')->default(('active'));
 
             $table->timestamps();

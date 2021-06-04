@@ -10,14 +10,16 @@ class Like extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'type',
         'post_id',
-        'login'
+        'comment_id',
+        'user_id',
+        'like',
     ];
 
     protected $casts = [
         'user_id' => 'integer',
         'post_id' => 'integer',
+        'like' => 'integer',
+        'comment_id' => 'integer'
     ];
 }

@@ -12,10 +12,10 @@ class CreateLikesTable extends Migration
         {
             $table->id();
 
-            $table->string('login');
-            $table->string('type');
             $table->integer('user_id');
-            $table->integer('post_id');
+            $table->integer('post_id')->nullable();
+            $table->integer('like');
+            $table->integer('comment_id')->nullable();
 
             $table->timestamps();
         });

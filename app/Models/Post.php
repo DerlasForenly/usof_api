@@ -11,17 +11,19 @@ class Post extends Model
 
     protected $fillable = [
         'title',
-        'slug',
         'content',
         'likes',
-        'dislikes',
         'user_id',
-        'tags',
+        'categories',
         'status'
     ];
 
     protected $casts = [
+        'title' => 'string',
+        'content' => 'string',
         'likes' => 'integer',
-        'dislikes' => 'integer',
+        'user_id' => 'integer',
+        'categories' => 'array',
+        'status' => 'string'
     ];
 }

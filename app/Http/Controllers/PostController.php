@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Comment;
-use App\Models\Comment;
+use App\Models\Like;
+use App\Models\Category;
+use App\Models\CategoryPost;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -28,17 +30,33 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required',
             'content' => 'required',
-            'tags' => 'required',
-            'slug' => 'required'
+            'categories' => 'required|array'
         ]);
 
-        return Post::create([
+        foreach($request['categories'] as $category_id) {
+            $category = Category::find($category_id);
+            if (!$category) {
+                return response([
+                    'message' => "Not found"
+                ], 404);
+            }
+        }
+
+        $post = Post::create([
             'user_id' => $user->id,
             'title' => $request['title'],
-            'slug' => $request['slug'],
             'content' => $request['content'],
-            'tags' => $request['tags'],
+            'categories' => $request['categories'],
         ]);
+
+        foreach($request['categories'] as $category_id) {
+            CategoryPost::create([
+                'post_id' => $post->id,
+                'category_id' => $category_id
+            ]);
+        }
+
+        return $post;
     }
 
     public function show($id)
@@ -100,21 +118,105 @@ class PostController extends Controller
             ], 401);
         }
 
-        return Comment::create([
+        if (!Post::find($id)) {
+            return response([
+                'message' => "Not found"
+            ], 404);
+        }
+
+        Comment::create([
             'login' => $user['login'],
-            'user_id' => $user->id,
+            'user_id' => $user['id'],
             'post_id' => $id,
             'content' => $request['content'],
         ]);
+
+        return response([
+            'message' => "OK"
+        ], 200);
     }
 
     public function get_all_comments($id)
     {
+        try {
+            $user = auth()->userOrFail();
+        }
+        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 401);
+        }
+
+        if (!Post::find($id)) {
+            return response([
+                'message' => "Not found"
+            ], 404);
+        }
+
         return Comment::where('post_id', $id)->get();
     }
 
-    public function create_like(Request $request)
+    public function create_like(Request $request, $post_id)
     {
+        try {
+            $user = auth()->userOrFail();
+        }
+        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 401);
+        }
 
+        if (!Post::find($post_id)) {
+            return response([
+                'message' => 'Not found'
+            ], 404);
+        }
+
+        if (Like::where('post_id', $post_id)->where('user_id', $user->id)->get()->first()) {
+            return response([
+                'message' => 'Something went wrong'
+            ], 401);
+        }
+
+        Like::create([
+            'like' => $request->like,
+            'user_id' => $user->id,
+            'post_id' => $post_id
+        ]);
+
+        return response([
+            'message' => 'OK'
+        ], 200);
+    }
+
+    public function delete_like(Request $request, $post_id)
+    {
+        try {
+            $user = auth()->userOrFail();
+        }
+        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 401);
+        }
+
+        if (!Comment::where('post_id', $post_id)->get()) {
+            return response([
+                'message' => 'Not found'
+            ], 404);
+        }
+
+        $like = Like::where('post_id', $post_id)->where('user_id', $user->id)->get()->first();
+        if (!$like) {
+            return response([
+                'message' => 'Not found'
+            ], 404);
+        }
+        $like->delete();
+
+        return response([
+            'message' => 'OK'
+        ], 200);
     }
 }

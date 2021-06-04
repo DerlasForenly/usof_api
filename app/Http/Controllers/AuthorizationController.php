@@ -28,14 +28,16 @@ class AuthorizationController extends Controller
 
     public function registration(Request $request)
     {
-
-
-        return User::create([
+        User::create([
             'name' => $request['name'],
             'email' => $request['email'],
             'login' => $request['login'],
             'password' => Hash::make($request['password']),
         ]);
+
+        return response([
+            'message' => "OK"
+        ], 200);
     }
 
     public function me()
@@ -47,7 +49,7 @@ class AuthorizationController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'Successfully logged out'], 200);
     }
 
     public function refresh()
