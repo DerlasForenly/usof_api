@@ -27,6 +27,16 @@ class CommentController extends Controller
             ], 404);
         }
 
+        $rating = 0;
+        $likes = Like::where('comment_id', $id)->get();
+        foreach ($likes as &$like) {
+            $rating += $like->like;
+            $rating -= $like->dislike;
+        }
+        $comment->update([
+            'likes' => $rating
+        ]);
+
         return $comment;
     }
 
@@ -65,8 +75,8 @@ class CommentController extends Controller
         $comment = Comment::find($id);
         if (!$comment) {
             return response([
-                'message' => 'Post does not exist'
-            ]);
+                'message' => 'Not found'
+            ], 404);
         }
 
         if (Like::where('comment_id', $comment->id)->where('user_id', $user->id)->get()->first()) {
@@ -75,8 +85,21 @@ class CommentController extends Controller
             ], 401);
         }
 
+        if ($request['like'] > 1 || $request['dislike'] > 1) {
+            return response([
+                'message' => 'Something went wrong'
+            ], 401);
+        }
+
+        // if ($request['like'] == 1 && $request['dislike'] == 1) {
+        //     return response([
+        //         'message' => 'Something went wrong'
+        //     ], 401);
+        // }
+
         Like::create([
             'like' => $request['like'],
+            'dislike' => $request['dislike'],
             'comment_id' => $comment->id,
             'user_id' => $user->id
         ]);

@@ -41,11 +41,11 @@ class CategoryController extends Controller
             ], 401);
         }
 
-        if (User::where('login', $admin->login)->first()['role'] == 'user') {
-            return response([
-                'message' => 'Permission denied'
-            ], 403);
-        }
+        // if (User::where('login', $admin->login)->first()['role'] == 'user') {
+        //     return response([
+        //         'message' => 'Permission denied'
+        //     ], 403);
+        // }
 
         $request->validate([
             'title' => 'required|unique:categories,title',

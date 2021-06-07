@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Like;
+use App\Models\User;
 use App\Models\Category;
 use App\Models\CategoryPost;
 use Illuminate\Http\Request;
@@ -107,13 +108,24 @@ class PostController extends Controller
         }
 
         $post = Post::find($id);
-        if ($user->id != $post['user_id']) {
+        if (!$post) {
             return response([
-                'message' => 'Permission denied'
-            ]);
+                'message' => 'Not found'
+            ], 404);
         }
 
-        $post->update($request->all());
+        if (User::where('login', $user->login)->first()['role'] == 'admin') {
+            $post->update($request->all());
+        }
+        else {
+            if ($user->id != $post['user_id']) {
+                return response([
+                    'message' => 'Permission denied'
+                ], 403);
+            }
+            $post->update($request->all());
+        }
+
         return $post;
     }
 
@@ -184,7 +196,20 @@ class PostController extends Controller
             ], 404);
         }
 
-        return Comment::where('post_id', $id)->get();
+        $comments = Comment::where('post_id', $id)->get();
+        foreach ($comments as &$comment) {
+            $likes = Like::where('comment_id', $comment->id)->get();
+            $rating = 0;
+            foreach ($likes as &$like) {
+                $rating += $like->like;
+                $rating -= $like->dislike;
+            }
+            $comment->update([
+                'likes' => $rating
+            ]);
+        }
+
+        return $comments;
     }
 
     public function create_like(Request $request, $post_id)
@@ -210,8 +235,15 @@ class PostController extends Controller
             ], 401);
         }
 
+        if ($request['like'] > 1 || $request['dislike'] > 1) {
+            return response([
+                'message' => 'Something went wrong'
+            ], 401);
+        }
+
         Like::create([
             'like' => $request->like,
+            'dislike' => $request->dislike,
             'user_id' => $user->id,
             'post_id' => $post_id
         ]);

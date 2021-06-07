@@ -14,6 +14,7 @@ class Like extends Model
         'comment_id',
         'user_id',
         'like',
+        'dislike'
     ];
 
     protected $casts = [
