@@ -12,14 +12,14 @@ class CategoryController extends Controller
 {
     public function get_all()
     {
-        try {
-            $admin = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $admin = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
         // if (User::where('login', $admin->login)->first()['role'] == 'user') {
         //     return response([
@@ -57,14 +57,14 @@ class CategoryController extends Controller
 
     public function get_one($id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
         $category = Category::find($id);
         if (!$category) {
@@ -138,14 +138,14 @@ class CategoryController extends Controller
 
     public function get_all_posts($category_id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
         $category = Category::find($category_id);
         if (!$category) {

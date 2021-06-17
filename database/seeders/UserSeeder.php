@@ -14,38 +14,38 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'login' => 'Derlas',
             'name' => 'Derlas Forenly',
-            'password' => Hash::make('dNRhmRZ'),
+            'password' => Hash::make('minecraft'),
             'email' => 'tany.tany283@gmail.com',
             'role' => 'admin',
         ]);
 
         DB::table('users')->insert([
-            'login' => 'User1',
-            'name' => 'First Name',
+            'login' => "vponomaren",
+            'name' => 'Vladiiimer',
             'password' => Hash::make('111111'),
-            'email' => 'user1@test.test',
+            'email' => 'vladimer@test.test',
             'role' => 'user'
         ]);
 
         DB::table('users')->insert([
-            'login' => 'User2',
-            'name' => 'First Name',
+            'login' => 'AlexRazor',
+            'name' => 'Alexander Not Lucashenko',
             'password' => Hash::make('111111'),
-            'email' => 'user2@test.test',
+            'email' => 'alex@test.test',
             'role' => 'user'
         ]);
 
         DB::table('users')->insert([
-            'login' => 'User3',
-            'name' => 'First Name',
+            'login' => '_PuSsY_dEsTrOyEr_',
+            'name' => 'Anonimus Name',
             'password' => Hash::make('111111'),
-            'email' => 'user3@test.test',
+            'email' => 'anonimus@test.test',
             'role' => 'user'
         ]);
 
         DB::table('users')->insert([
-            'login' => 'User4',
-            'name' => 'First Name',
+            'login' => 'Goirno',
+            'name' => 'Giorno Giovanna',
             'password' => Hash::make('111111'),
             'email' => 'user4@test.test',
             'role' => 'user'

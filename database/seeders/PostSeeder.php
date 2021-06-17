@@ -13,37 +13,37 @@ class PostSeeder extends Seeder
     {
         DB::table('posts')->insert([
             'title' => 'Welcome',
-            'content' => 'This is first post here',
-            'categories' => '[]',
+            'content' => 'This is first post here created with PostSeeder',
+            'categories' => '[1]',
             'user_id' => 1
         ]);
 
         DB::table('posts')->insert([
-            'title' => 'Test post 1',
-            'content' => 'Test content 1',
-            'categories' => '[1]',
+            'title' => 'Dota is a shit',
+            'content' => 'Я все сказал!',
+            'categories' => '[1, 4]',
             'user_id' => 2
         ]);
 
         DB::table('posts')->insert([
-            'title' => 'Test post 2',
-            'content' => 'Test content 2',
-            'categories' => '[1, 3]',
+            'title' => 'Ukraine',
+            'content' => 'Смажена картошка',
+            'categories' => '[1, 5]',
             'user_id' => 3
         ]);
 
         DB::table('posts')->insert([
-            'title' => 'Test post 3',
-            'content' => 'Test content 3',
-            'categories' => '[1, 3, 4]',
-            'user_id' => 2
+            'title' => "Discussion about Poland's role in meme-industry",
+            'content' => 'I think it is really important',
+            'categories' => '[1, 4, 6]',
+            'user_id' => 4
         ]);
 
         DB::table('posts')->insert([
-            'title' => 'Test post 4',
-            'content' => 'Test content 5',
-            'categories' => '[2, 1]',
-            'user_id' => 2
+            'title' => 'Please, delete me',
+            'content' => "I exist only for deleting, just do it!",
+            'categories' => '[1]',
+            'user_id' => 5
         ]);
     }
 }

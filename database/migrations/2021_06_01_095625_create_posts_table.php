@@ -19,7 +19,7 @@ class CreatePostsTable extends Migration
             $table->string('title');
             $table->string('content');
             $table->integer('user_id');
-            $table->json('categories')->nullable();
+            $table->json('categories');
             $table->integer('likes')->default(0);
             $table->string('status')->default(('active'));
 

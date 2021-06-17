@@ -13,37 +13,38 @@ class CommentSeeder extends Seeder
     {
         DB::table('comments')->insert([
             'user_id' => 1,
-            'login' => 'Derlas',
             'post_id' => 1,
-            'content' => 'It is my first comment',
+            'content' => 'It is my own comment, thx for attention',
         ]);
 
         DB::table('comments')->insert([
             'user_id' => 2,
-            'login' => 'User1',
             'post_id' => 2,
-            'content' => 'test comment 1',
+            'content' => 'Меня взломали, я не мог такое сказать',
         ]);
 
         DB::table('comments')->insert([
             'user_id' => 2,
-            'login' => 'User1',
-            'post_id' => 2,
-            'content' => 'test comment 2',
-        ]);
-
-        DB::table('comments')->insert([
-            'user_id' => 3,
-            'login' => 'User2',
-            'post_id' => 2,
-            'content' => 'test comment 4',
-        ]);
-
-        DB::table('comments')->insert([
-            'user_id' => 3,
-            'login' => 'User2',
             'post_id' => 3,
-            'content' => 'test comment 5',
+            'content' => 'Ммммммм....',
+        ]);
+
+        DB::table('comments')->insert([
+            'user_id' => 1,
+            'post_id' => 3,
+            'content' => 'Ммммм....',
+        ]);
+
+        DB::table('comments')->insert([
+            'user_id' => 1,
+            'post_id' => 4,
+            'content' => 'ok',
+        ]);
+
+        DB::table('comments')->insert([
+            'user_id' => 1,
+            'post_id' => 5,
+            'content' => 'Ok, i will do it',
         ]);
     }
 }

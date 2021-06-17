@@ -15,14 +15,14 @@ class UserController extends Controller
 {
     public function index()
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
         if (User::where('login', $user->login)->first()['role'] == 'user') {
             return response([

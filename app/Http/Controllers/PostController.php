@@ -15,22 +15,40 @@ class PostController extends Controller
 {
     public function index()
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
-        if (!Post::all()) {
+        $posts = Post::all();
+
+        if (!$posts) {
             return response([
                 'message' => "Not found"
             ], 404);
         }
 
-        return Post::all();
+        $extended_posts = [];
+        foreach ($posts as &$post) {
+            array_push($extended_posts, [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'categories' => $post->categories,
+                'likes' => $post->likes,
+                'status' => $post->status,
+                'created_at' => $post->created_at,
+                'updated_at' => $post->updated_at,
+                'user_id' => $post->user_id,
+                'login' => User::find($post->user_id)->login,
+            ]);
+        }
+
+        return $extended_posts;
     }
 
     public function store(Request $request)
@@ -59,6 +77,8 @@ class PostController extends Controller
             }
         }
 
+        //sort($request['categories'], SORT_NUMERIC);
+
         $post = Post::create([
             'user_id' => $user->id,
             'title' => $request['title'],
@@ -78,22 +98,35 @@ class PostController extends Controller
 
     public function show($id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
-        if (!Post::find($id)) {
+        $post = Post::find($id);
+
+        if (!$post) {
             return response([
                 'message' => "Not found"
             ], 404);
         }
 
-        return Post::find($id);
+        return [
+            'id' => $post->id,
+            'title' => $post->title,
+            'content' => $post->content,
+            'categories' => $post->categories,
+            'likes' => $post->likes,
+            'status' => $post->status,
+            'created_at' => $post->created_at,
+            'updated_at' => $post->updated_at,
+            'user_id' => $post->user_id,
+            'login' => User::find($post->user_id)->login,
+        ];
     }
 
     public function update(Request $request, $id)
@@ -181,14 +214,14 @@ class PostController extends Controller
 
     public function get_all_comments($id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
         if (!Post::find($id)) {
             return response([
@@ -285,14 +318,14 @@ class PostController extends Controller
 
     public function get_all_likes($post_id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
         if (!Post::find($post_id)) {
             return response([
@@ -305,15 +338,6 @@ class PostController extends Controller
 
     public function get_categories($post_id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
-
         if (!Post::find($post_id)) {
             return response([
                 'message' => 'Not found'
@@ -324,7 +348,7 @@ class PostController extends Controller
 
         $categories = [];
         foreach ($category_post as $element) {
-            array_push($categories, Category::find($element->id));
+            array_push($categories, Category::find($element->category_id));
         }
 
         return $categories;

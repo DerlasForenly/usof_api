@@ -11,14 +11,14 @@ class CommentController extends Controller
 {
     public function get($id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
         $comment = Comment::find($id);
         if (!$comment) {
@@ -42,14 +42,14 @@ class CommentController extends Controller
 
     public function get_likes($id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
         $like = Like::where('comment_id', $id)->get();
         if (!$like) {
@@ -156,11 +156,13 @@ class CommentController extends Controller
             ], 404);
         }
 
-        if ($user->id != $comment->user_id) {
+        if ($user->role != "admin" && $user->id != $comment->user_id)
+        {
             return response([
                 'message' => "Permission denied"
             ], 403);
         }
+
 
         $comment->delete();
 

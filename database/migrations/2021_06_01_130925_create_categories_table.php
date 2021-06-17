@@ -12,7 +12,7 @@ class CreateCategoriesTable extends Migration
             $table->id();
 
             $table->string('title')->unique();
-            $table->string('description');
+            $table->string('description', 500);
 
             $table->timestamps();
         });

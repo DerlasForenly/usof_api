@@ -13,7 +13,7 @@ class CreateCommentsTable extends Migration
 
             $table->integer('user_id');
             $table->integer('post_id');
-            $table->string('login');
+            $table->string('login')->nullable();
 
             $table->string('content');
             $table->integer('likes')->default(0);

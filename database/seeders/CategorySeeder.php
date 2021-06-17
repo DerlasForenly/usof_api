@@ -12,28 +12,49 @@ class CategorySeeder extends Seeder
     public function run()
     {
         DB::table('categories')->insert([
-            'title' => 'Test1',
-            'description' => 'Test category 1',
+            'title' => 'Off top',
+            'description' => 'It means something like: "for real", "seriously" or "I swear".
+            Also can be used to mean "right away".',
         ]);
 
         DB::table('categories')->insert([
-            'title' => 'Test2',
-            'description' => 'Test category 2',
+            'title' => 'C++',
+            'description' => "A programming language for Real Men.
+            Most languages try to provide a simplified way to solve specific problems well.",
         ]);
 
         DB::table('categories')->insert([
-            'title' => 'Test3',
-            'description' => 'Test category 3',
+            'title' => 'Javascript',
+            'description' => 'A powerful, object-based,
+            interpreted scripting language, created by
+            Brendan Eich, most commonly embedded
+            directly into HTML web pages to manage
+            client-side interaction.',
         ]);
 
         DB::table('categories')->insert([
-            'title' => 'Test4',
-            'description' => 'Test category 4',
+            'title' => 'Poland',
+            'description' => 'The first country to defeat the Soviet Union in war.
+            The country that defeated the Teutonic knights,
+            ending German supremacy for hundreds of years.',
         ]);
 
         DB::table('categories')->insert([
-            'title' => 'Test5',
-            'description' => 'Test category 5',
+            'title' => 'Ukraine',
+            'description' => 'Ukraine most often erroneously called
+            "The" Ukraine is a country in Eastern Europe. Ukraine is
+            not Russia & Russia is not Ukraine.',
+        ]);
+
+        DB::table('categories')->insert([
+            'title' => 'Anime',
+            'description' => 'Japanese animation drawn in the same
+            style as manga just animated. Often messed up by America.',
+        ]);
+
+        DB::table('categories')->insert([
+            'title' => 'Memes',
+            'description' => 'The cure of depression.',
         ]);
     }
 }
