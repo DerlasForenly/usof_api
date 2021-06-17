@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+use function PHPUnit\Framework\isEmpty;
+
 class AuthorizationController extends Controller
 {
     public function login(Request $request)
@@ -40,6 +42,15 @@ class AuthorizationController extends Controller
 
     public function me()
     {
+        try {
+            $user = auth()->userOrFail();
+        }
+        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 401);
+        }
+
         return response()->json(auth()->user());
     }
 
