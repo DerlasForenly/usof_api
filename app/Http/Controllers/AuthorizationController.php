@@ -19,6 +19,12 @@ class AuthorizationController extends Controller
             'password' => $request['password']
         ];
 
+        $user = User::where('email', $request['email'])->get()->first();
+        if (!$user) {
+            return response([
+                'message' => "Not found"
+            ], 404);
+        }
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -77,6 +83,11 @@ class AuthorizationController extends Controller
 
     public function password_reset(Request $request)
     {
+
+        $request->validate([
+            'email' => 'required'
+        ]);
+        
         $user = User::where('email', $request['email'])->get()->first();
         if (!$user) {
             return response([
@@ -84,9 +95,7 @@ class AuthorizationController extends Controller
             ], 404);
         }
 
-        $request->validate([
-            'email' => 'required'
-        ]);
+        
 
         $user->update([
             'remember_token' => Str::random(15)

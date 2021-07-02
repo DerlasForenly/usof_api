@@ -15,40 +15,7 @@ class PostController extends Controller
 {
     public function index()
     {
-        // try {
-        //     $user = auth()->userOrFail();
-        // }
-        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-        //     return response([
-        //         'message' => $e->getMessage()
-        //     ], 401);
-        // }
-
-        $posts = Post::all();
-
-        if (!$posts) {
-            return response([
-                'message' => "Not found"
-            ], 404);
-        }
-
-        $extended_posts = [];
-        foreach ($posts as &$post) {
-            array_push($extended_posts, [
-                'id' => $post->id,
-                'title' => $post->title,
-                'content' => $post->content,
-                'categories' => $post->categories,
-                'likes' => $post->likes,
-                'status' => $post->status,
-                'created_at' => $post->created_at,
-                'updated_at' => $post->updated_at,
-                'user_id' => $post->user_id,
-                'login' => User::find($post->user_id)->login,
-            ]);
-        }
-
-        return $extended_posts;
+        return Post::paginate(3);
     }
 
     public function store(Request $request)
@@ -115,18 +82,25 @@ class PostController extends Controller
             ], 404);
         }
 
-        return [
+        $post = [
             'id' => $post->id,
             'title' => $post->title,
             'content' => $post->content,
             'categories' => $post->categories,
-            'likes' => $post->likes,
+            'likes' => 0,
             'status' => $post->status,
             'created_at' => $post->created_at,
             'updated_at' => $post->updated_at,
             'user_id' => $post->user_id,
             'login' => User::find($post->user_id)->login,
         ];
+
+        foreach (Like::where('post_id', $post['id'])->get() as $like) {
+            $post['likes'] += $like['like'];
+            $post['likes'] -= $like['dislike'];
+        }
+
+        return $post;
     }
 
     public function update(Request $request, $id)
@@ -174,13 +148,22 @@ class PostController extends Controller
         }
 
         $post = Post::find($id);
-        if ($user->id != $post['user_id'] || $user->role != "admin") {
-            return response([
-                'message' => 'Permission denied'
-            ]);
+        if ($user->role != "admin") {
+            if ($user->id != $post['user_id']) {
+                return response([
+                    'message' => 'Permission denied'
+                ], 403);
+            }
         }
 
-        return Post::destroy($id);
+        Post::destroy($id); 
+
+        return response([
+            'user' => $user->login,
+            'role' => $user->role,
+            'post_id' => $id,
+            'description' => 'Post has beed'
+        ], 200);
     }
 
     public function create_comment(Request $request, $id)
@@ -198,6 +181,12 @@ class PostController extends Controller
             return response([
                 'message' => "Not found"
             ], 404);
+        }
+
+        if (strlen($request['content']) >= 255) {
+            return response([
+                'message' => 'Content too long'
+            ], 400);
         }
 
         Comment::create([
@@ -230,6 +219,8 @@ class PostController extends Controller
         }
 
         $comments = Comment::where('post_id', $id)->get();
+        $new_comments = [];
+
         foreach ($comments as &$comment) {
             $likes = Like::where('comment_id', $comment->id)->get();
             $rating = 0;
@@ -240,9 +231,19 @@ class PostController extends Controller
             $comment->update([
                 'likes' => $rating
             ]);
+            array_push($new_comments, [
+                'id' => $comment->id,
+                'post_id' => $comment->post_id,
+                'user_id' => $comment->user_id,
+                'login' => User::find($comment->user_id)->login,
+                'content' => $comment->content,
+                'likes' => $comment->likes,
+                'created_at' => $comment->created_at,
+                'updated_at' => $comment->updated_at,
+            ]);
         }
 
-        return $comments;
+        return $new_comments;
     }
 
     public function create_like(Request $request, $post_id)
@@ -262,10 +263,21 @@ class PostController extends Controller
             ], 404);
         }
 
-        if (Like::where('post_id', $post_id)->where('user_id', $user->id)->get()->first()) {
-            return response([
-                'message' => 'Something went wrong'
-            ], 401);
+        $like = Like::where('post_id', $post_id)->where('user_id', $user->id)->get()->first();
+        if ($like) {
+            if ($request['like'] === $like['like'] && $request['dislike'] === $like['dislike'])
+                return response([
+                    'message' => 'Something went wrong'
+                ], 401);
+            else {
+                $like->update([
+                    'like' => $request['like'],
+                    'dislike' => $request['dislike'],
+                ]);
+                return response([
+                    'message' => 'OK'
+                ], 200);
+            }
         }
 
         if ($request['like'] > 1 || $request['dislike'] > 1) {
@@ -333,7 +345,7 @@ class PostController extends Controller
             ], 404);
         }
 
-        return Like::where('post_id', $post_id)->get();
+        return response(Like::where('post_id', $post_id)->get(), 200);
     }
 
     public function get_categories($post_id)

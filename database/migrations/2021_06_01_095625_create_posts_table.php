@@ -18,10 +18,14 @@ class CreatePostsTable extends Migration
 
             $table->string('title');
             $table->string('content');
-            $table->integer('user_id');
+
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
+
+
             $table->json('categories');
             $table->integer('likes')->default(0);
-            $table->string('status')->default(('active'));
+            $table->string('status')->default('active');
 
             $table->timestamps();
         });

@@ -89,20 +89,20 @@ class UserController extends Controller
 
     public function show($id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
-        if (User::where('login', $user->login)->first()['role'] == 'user') {
-            return response([
-                'message' => 'Permission denied'
-            ], 403);
-        }
+        // if (User::where('login', $user->login)->first()['role'] == 'user') {
+        //     return response([
+        //         'message' => 'Permission denied'
+        //     ], 403);
+        // }
 
         $user = User::find($id);
         if (!$user) {
@@ -124,6 +124,12 @@ class UserController extends Controller
             'rating' => $rating
         ]);
 
+        // $user = [
+        //     "user_id"
+        //     "login" => $user['login'],
+
+        // ],
+
         return $user;
     }
 
@@ -138,7 +144,7 @@ class UserController extends Controller
             ], 401);
         }
 
-        if (User::where('login', $user->login)->first()['role'] == 'user') {
+        if ($user->id != $id) {
             return response([
                 'message' => 'Permission denied'
             ], 403);
@@ -155,13 +161,13 @@ class UserController extends Controller
             'login' => 'required',
             'name' => 'required',
             'email' => 'required',
-            'password' => 'required',
+            //'password' => 'required',
             'role' => 'required'
         ]);
 
         $user['name'] = $request['name'];
         $user['login'] = $request['login'];
-        $user['password'] = $request['password'];
+        //$user['password'] = $request['password'];
         $user['email'] = $request['email'];
         $user['role'] = $request['role'];
 
@@ -193,6 +199,12 @@ class UserController extends Controller
                 'message' => "Not found"
             ], 404);
         }
+
+        // return response([
+        //     'message' => "OK",
+        //     'user' => $user,
+        // ], 200);
+
         $user->delete();
 
         return response([
@@ -213,7 +225,8 @@ class UserController extends Controller
 
         if (!$request->file('picture')) {
             return response([
-                "message" => "avatar is not uploaded"
+                "message" => "avatar is not uploaded",
+                "request" => $request->file('picture')
             ]);
         }
 
@@ -240,25 +253,32 @@ class UserController extends Controller
 
     public function download_avatar($id)
     {
-        try {
-            $user = auth()->userOrFail();
-        }
-        catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
-            return response([
-                'message' => $e->getMessage()
-            ], 401);
-        }
+        // try {
+        //     $user = auth()->userOrFail();
+        // }
+        // catch (\Tymon\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     return response([
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
-        $user_ = User::find($id);
-        if (!$user_) {
+        $user = User::find($id);
+        if (!$user) {
             return response([
                 'message' => 'Not found'
             ], 404);
         }
 
-        $filepath = storage_path('app/public/avatars/').$user_->picture;
+        if (!$user->picture) {
+            return response([
+                'message' => 'No avatar',
+                'picture' => $user->picture,
+            ], 200);
+        }
+
+        $filepath = storage_path('app/public/avatars/').$user->picture;
         $headers = [];
 
-        return response()->download($filepath, $user_->picture, $headers);
+        return response()->download($filepath, $user->picture, $headers);
     }
 }

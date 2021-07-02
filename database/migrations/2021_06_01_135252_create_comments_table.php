@@ -11,9 +11,13 @@ class CreateCommentsTable extends Migration
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('user_id');
-            $table->integer('post_id');
-            $table->string('login')->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
+
+            $table->unsignedBigInteger('post_id');
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');;
+
+            //$table->string('login')->nullable();
 
             $table->string('content');
             $table->integer('likes')->default(0);

@@ -79,10 +79,21 @@ class CommentController extends Controller
             ], 404);
         }
 
-        if (Like::where('comment_id', $comment->id)->where('user_id', $user->id)->get()->first()) {
-            return response([
-                'message' => 'Something went wrong'
-            ], 401);
+        $like = Like::where('comment_id', $comment->id)->where('user_id', $user->id)->get()->first();
+        if ($like) {
+            if ($request['like'] === $like['like'] && $request['dislike'] === $like['dislike'])
+                return response([
+                    'message' => 'Something went wrong'
+                ], 401);
+            else {
+                $like->update([
+                    'like' => $request['like'],
+                    'dislike' => $request['dislike'],
+                ]);
+                return response([
+                    'message' => 'OK'
+                ], 200);
+            }
         }
 
         if ($request['like'] > 1 || $request['dislike'] > 1) {
